@@ -1,8 +1,9 @@
+# __import packages__
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 
+# __Create Variables and Import Data__
 url = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-states.csv'
 ny_data = pd.read_csv(url)
 ny_data.drop('fips', axis=1, inplace=True)
@@ -15,10 +16,7 @@ census_data.columns = ['state', 'population']
 census_data['population'] = pd.to_numeric(census_data['population'].str.replace(',', ''))
 data = pd.merge(ny_data, census_data, on='state')
 
-
-# List of states with the most confirmed_cases from highest to lowest.
-# print(pd.DataFrame(data['state'].unique()))
-
+# __Generate Vizualizations__
 def barh_plot(x_axis, color='black',line_data=[0], line_color='black'):
     """
     Plot horizontal bar plot with a line.
@@ -35,13 +33,11 @@ def barh_plot(x_axis, color='black',line_data=[0], line_color='black'):
     plt.gca().invert_yaxis()
     plt.savefig('figures/'+'state_'+x_axis+'.png')
 
-
-# __ confirmed cases plot __
 barh_plot('population', line_data=data['confirmed_cases'], line_color='goldenrod')
 barh_plot('confirmed_cases', color='goldenrod', line_data=data['deaths'], line_color='darkred')
 barh_plot('deaths', color='darkred')
 
-
+# Create a table with the percent of the population infected and the percent of infected that have died.
 def ratio(state, column_x, column_y):
     """
     Calculates that ratio of column_x and column_y filtered by state.
@@ -59,4 +55,5 @@ for state in data['state'].unique():
 for state in data['state'].unique():
     ratio_data['death_ratio'].append(ratio(state, 'deaths', 'confirmed_cases'))
 
-pd.DataFrame(ratio_data).to_csv(cd_data+'ratio_data.csv', index=False)
+
+pd.DataFrame(ratio_data).to_csv(cd_data+'us_ratio_data.csv', index=False)
